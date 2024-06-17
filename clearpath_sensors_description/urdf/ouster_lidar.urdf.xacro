@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="ouster_lidar"
+    params="name parent_link *origin
+                                    lasers:=64 samples:=1024 update_rate:=10
+                                    horizontal_samples=1024 vertical_samples=128 
+                                    min_range=0.5 max_range=75.0
+                                    lidar_link:=os1_lidar">
+
+
+    <link name="${name}">
+      <inertial>
+        <mass value="0.33" />
+        <origin xyz="0 0 0.0365" rpy="0 0 0" />
+        <inertia ixx="0.000241148" ixy="0" ixz="0"
+          iyy="0.000241148" iyz="0" izz="0.000264" />
+      </inertial>
+
+      <visual>
+        <geometry>
+          <mesh filename="package://clearpath_sensors_description/meshes/os0_baseplate.dae"
+            scale="0.001 0.001 0.001" />
+        </geometry>
+      </visual>
+
+      <visual>
+        <geometry>
+          <mesh filename="package://clearpath_sensors_description/meshes/os0.dae"
+            scale="0.001 0.001 0.001" />
+        </geometry>
+      </visual>
+
+      <collision name="base_collision">
+        <origin xyz="0 0 0.0365" rpy="0 0 0" />
+        <geometry>
+          <cylinder radius="0.04" length="0.073" />
+        </geometry>
+      </collision>
+
+    </link>
+
+    <joint name="${name}_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent_link}" />
+      <child link="${name}" />
+    </joint>
+
+    <link name="${lidar_link}" />
+    <joint name="${name}_lidar_link_joint" type="fixed">
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 3.14159" />
+      <parent link="${name}" />
+      <child link="${lidar_link}" />
+    </joint>
+
+    <!-- Gazebo requires the ouster_gazebo_plugins package -->
+    <gazebo reference="${name}">
+      <sensor name="${name}" type="gpu_lidar">
+        <update_rate>${update_rate}</update_rate>
+        <visualize>true</visualize>
+        <always_on>true</always_on>
+        <ignition_frame_id>${name}</ignition_frame_id>
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>${horizontal_samples}</samples>
+              <resolution>1</resolution>
+              <min_angle>-${pi}</min_angle>
+              <max_angle>${pi}</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>${vertical_samples}</samples>
+              <resolution>1</resolution>
+              <min_angle>-${45.0*pi/180.0}</min_angle>
+              <max_angle>${45.0*pi/180.0}</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>${min_range}</min>
+            <max>${max_range}</max>
+            <resolution>0.01</resolution>
+          </range>
+        </lidar>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+</robot>

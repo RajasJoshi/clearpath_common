@@ -44,7 +44,7 @@ from clearpath_config.sensors.types.imu import (
     RedshiftUM7
 )
 from clearpath_config.sensors.types.lidars_2d import BaseLidar2D, HokuyoUST, SickLMS1XX
-from clearpath_config.sensors.types.lidars_3d import BaseLidar3D, VelodyneLidar
+from clearpath_config.sensors.types.lidars_3d import BaseLidar3D, VelodyneLidar, OusterLidar
 from clearpath_config.sensors.types.sensor import BaseSensor
 
 
@@ -129,6 +129,20 @@ class SensorDescription():
                 self.UPDATE_RATE: 50
             })
 
+    class OusterDescription(BaseDescription):
+        MINIMUM_RANGE = 'min_range'
+        MAXIMUM_RANGE = 'max_range'
+        UPDATE_RATE = 'update_rate'
+
+        def __init__(self, sensor: BaseLidar3D) -> None:
+            super().__init__(sensor)
+
+            self.parameters.update({
+                self.MINIMUM_RANGE: 0.9,
+                self.MAXIMUM_RANGE: 130.0,
+                self.UPDATE_RATE: 50
+            })
+
     class ImuDescription(BaseDescription):
         UPDATE_RATE = 'update_rate'
 
@@ -178,6 +192,7 @@ class SensorDescription():
         FlirBlackfly.SENSOR_MODEL: CameraDescription,
         Microstrain.SENSOR_MODEL: ImuDescription,
         VelodyneLidar.SENSOR_MODEL: Lidar3dDescription,
+        OusterLidar.SENSOR_MODEL: OusterDescription,
         CHRoboticsUM6.SENSOR_MODEL: ImuDescription,
         RedshiftUM7.SENSOR_MODEL: ImuDescription,
         StereolabsZed.SENSOR_MODEL: StereolabsZedDescription,
